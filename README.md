@@ -165,3 +165,29 @@ The module includes validation rules for:
 ## License
 
 This module is part of the AIRCLOUD Azure Infrastructure Platform.
+## Requirements
+
+No requirements.
+
+## Providers
+
+No providers.
+
+## Modules
+
+No modules.
+
+## Resources
+
+No resources.
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
+
+<!-- BEGIN_TF_DOCS -->
+<!-- END_TF_DOCS -->

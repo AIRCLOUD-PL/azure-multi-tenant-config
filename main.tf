@@ -2,15 +2,6 @@
 # This module provides centralized configuration for different environments
 # across multiple tenants and subscriptions
 
-terraform {
-  required_version = ">= 1.3.0"
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">= 3.80.0, < 5.0.0"
-    }
-  }
-}
 
 # Data sources for current context
 data "azurerm_client_config" "current" {}
@@ -184,25 +175,28 @@ locals {
     var.additional_tags
   )
 
-  # Resource naming convention
+  # Resource naming convention (prefix/suffix as separate locals: a local cannot reference itself)
+  naming_prefix = var.naming_prefix != null ? var.naming_prefix : lower("${var.organization}-${var.project_name}-${var.environment}")
+  naming_suffix = var.naming_suffix != null ? var.naming_suffix : lower(var.location_short)
+
   naming_convention = {
-    prefix = var.naming_prefix != null ? var.naming_prefix : lower("${var.organization}-${var.project_name}-${var.environment}")
-    suffix = var.naming_suffix != null ? var.naming_suffix : lower("${var.location_short}")
+    prefix = local.naming_prefix
+    suffix = local.naming_suffix
 
     # Standard naming patterns
     patterns = {
-      resource_group      = "${local.naming_convention.prefix}-rg-${local.naming_convention.suffix}"
-      storage_account     = lower(replace("${local.naming_convention.prefix}st${local.naming_convention.suffix}", "-", ""))
-      key_vault           = "${local.naming_convention.prefix}-kv-${local.naming_convention.suffix}"
-      virtual_network     = "${local.naming_convention.prefix}-vnet-${local.naming_convention.suffix}"
-      subnet              = "${local.naming_convention.prefix}-snet-{purpose}-${local.naming_convention.suffix}"
-      nsg                 = "${local.naming_convention.prefix}-nsg-{purpose}-${local.naming_convention.suffix}"
-      vm                  = "${local.naming_convention.prefix}-vm-{purpose}-${local.naming_convention.suffix}"
-      container_registry  = lower(replace("${local.naming_convention.prefix}cr${local.naming_convention.suffix}", "-", ""))
-      api_management      = "${local.naming_convention.prefix}-apim-${local.naming_convention.suffix}"
-      application_gateway = "${local.naming_convention.prefix}-agw-${local.naming_convention.suffix}"
-      firewall            = "${local.naming_convention.prefix}-fw-${local.naming_convention.suffix}"
-      vpn_gateway         = "${local.naming_convention.prefix}-vpngw-${local.naming_convention.suffix}"
+      resource_group      = "${local.naming_prefix}-rg-${local.naming_suffix}"
+      storage_account     = lower(replace("${local.naming_prefix}st${local.naming_suffix}", "-", ""))
+      key_vault           = "${local.naming_prefix}-kv-${local.naming_suffix}"
+      virtual_network     = "${local.naming_prefix}-vnet-${local.naming_suffix}"
+      subnet              = "${local.naming_prefix}-snet-{purpose}-${local.naming_suffix}"
+      nsg                 = "${local.naming_prefix}-nsg-{purpose}-${local.naming_suffix}"
+      vm                  = "${local.naming_prefix}-vm-{purpose}-${local.naming_suffix}"
+      container_registry  = lower(replace("${local.naming_prefix}cr${local.naming_suffix}", "-", ""))
+      api_management      = "${local.naming_prefix}-apim-${local.naming_suffix}"
+      application_gateway = "${local.naming_prefix}-agw-${local.naming_suffix}"
+      firewall            = "${local.naming_prefix}-fw-${local.naming_suffix}"
+      vpn_gateway         = "${local.naming_prefix}-vpngw-${local.naming_suffix}"
     }
   }
 
